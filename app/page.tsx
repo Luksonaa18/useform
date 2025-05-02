@@ -1,40 +1,24 @@
 "use client";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { MdError } from "react-icons/md";
+
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
 
 export default function Home() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
-
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    const newErrors = {
-      firstName: firstName ? "" : "First Name cannot be empty",
-      lastName: lastName ? "" : "Last Name cannot be empty",
-      email: email
-        ? /\S+@\S+\.\S+/.test(email)
-          ? ""
-          : "Looks like this is not an email"
-        : "Email cannot be empty",
-      password: password ? "" : "Password cannot be empty",
-    };
-
-    setErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((msg) => msg !== "");
-    if (!hasErrors) {
-      console.log("Form submitted successfully!");
-    }
+  const onSubmit = (data: FormData) => {
+    console.log("Form submitted:", data);
   };
 
   return (
@@ -48,11 +32,12 @@ export default function Home() {
         >
           <h1>Learn to code by watching others</h1>
           <span>
-            See how experienced developers solve problems in real-time. Watching
-            scripted tutorials is great, but understanding how developers think
-            is invaluable.
+            See how experienced developers solve problems in real-time.
+            Watching scripted tutorials is great, but understanding how
+            developers think is invaluable.
           </span>
         </motion.div>
+
         <div className="inside">
           <motion.div
             className="trying"
@@ -66,21 +51,41 @@ export default function Home() {
           </motion.div>
 
           <motion.form
+            onSubmit={handleSubmit(onSubmit)}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.7 }}
           >
-            <div className="input">
+            {/* First Name */}
+            <div className="input" style={{ position: "relative" }}>
               <input
                 type="text"
                 placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                {...register("firstName", {
+                  required: "First Name cannot be empty",
+                  pattern: {
+                    value: /^[A-Za-z]{2,}$/,
+                    message: "First Name must contain only letters",
+                  },
+                })}
                 style={{
                   border: errors.firstName ? "1px solid red" : undefined,
+                  paddingRight: "30px",
                 }}
               />
               {errors.firstName && (
+                <MdError
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "40%",
+                    transform: "translateY(-50%)",
+                    color: "red",
+                    fontSize: "18px",
+                  }}
+                />
+              )}
+              {errors.firstName?.message && (
                 <motion.div
                   className="error"
                   initial={{ opacity: 0, y: -10 }}
@@ -93,22 +98,41 @@ export default function Home() {
                     textAlign: "right",
                   }}
                 >
-                  {errors.firstName}
+                  {errors.firstName.message}
                 </motion.div>
               )}
             </div>
 
-            <div className="input">
+            {/* Last Name */}
+            <div className="input" style={{ position: "relative" }}>
               <input
                 type="text"
                 placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                {...register("lastName", {
+                  required: "Last Name cannot be empty",
+                  pattern: {
+                    value: /^[A-Za-z]{2,}$/,
+                    message: "Last Name must contain only letters",
+                  },
+                })}
                 style={{
                   border: errors.lastName ? "1px solid red" : undefined,
+                  paddingRight: "30px",
                 }}
               />
               {errors.lastName && (
+                <MdError
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "40%",
+                    transform: "translateY(-50%)",
+                    color: "red",
+                    fontSize: "18px",
+                  }}
+                />
+              )}
+              {errors.lastName?.message && (
                 <motion.div
                   className="error"
                   initial={{ opacity: 0, y: -10 }}
@@ -121,22 +145,41 @@ export default function Home() {
                     textAlign: "right",
                   }}
                 >
-                  {errors.lastName}
+                  {errors.lastName.message}
                 </motion.div>
               )}
             </div>
 
-            <div className="input">
+            {/* Email */}
+            <div className="input" style={{ position: "relative" }}>
               <input
                 type="email"
                 placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email", {
+                  required: "Email cannot be empty",
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: "Looks like this is not an email",
+                  },
+                })}
                 style={{
                   border: errors.email ? "1px solid red" : undefined,
+                  paddingRight: "30px",
                 }}
               />
               {errors.email && (
+                <MdError
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "40%",
+                    transform: "translateY(-50%)",
+                    color: "red",
+                    fontSize: "18px",
+                  }}
+                />
+              )}
+              {errors.email?.message && (
                 <motion.div
                   className="error"
                   initial={{ opacity: 0, y: -10 }}
@@ -149,22 +192,42 @@ export default function Home() {
                     textAlign: "right",
                   }}
                 >
-                  {errors.email}
+                  {errors.email.message}
                 </motion.div>
               )}
             </div>
 
-            <div className="input">
+            {/* Password */}
+            <div className="input" style={{ position: "relative" }}>
               <input
                 type="password"
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password", {
+                  required: "Password cannot be empty",
+                  pattern: {
+                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                    message:
+                      "Password must be at least 6 characters with a number",
+                  },
+                })}
                 style={{
                   border: errors.password ? "1px solid red" : undefined,
+                  paddingRight: "30px",
                 }}
               />
               {errors.password && (
+                <MdError
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "40%",
+                    transform: "translateY(-50%)",
+                    color: "red",
+                    fontSize: "18px",
+                  }}
+                />
+              )}
+              {errors.password?.message && (
                 <motion.div
                   className="error"
                   initial={{ opacity: 0, y: -10 }}
@@ -177,13 +240,13 @@ export default function Home() {
                     textAlign: "right",
                   }}
                 >
-                  {errors.password}
+                  {errors.password.message}
                 </motion.div>
               )}
             </div>
 
+            {/* Submit Button */}
             <motion.button
-              onClick={handleClick}
               id="submit"
               type="submit"
               whileHover={{ scale: 1.02 }}
